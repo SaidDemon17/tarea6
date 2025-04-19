@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tienda de celulares</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --secondary: #a29bfe;
+      --accent: #fd79a8;
+      --dark: #2d3436;
+      --light: #f5f6fa;
+      --success: #00b894;
+      --warning: #fdcb6e;
+      --danger: #d63031;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--light);
+      color: var(--dark);
+    }
+    
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--secondary);
+    }
+    
+    .app-title {
+      color: var(--primary);
+      font-size: 2.2rem;
+      margin: 0;
+      font-weight: 700;
+    }
+    
+    .nav-tabs {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .tab-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .categories {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .category-btn {
+      padding: 8px 15px;
+      background: var(--secondary);
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      color: white;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .category-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .category-btn.active {
+      background: var(--primary);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .product-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .product-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--accent);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      background: #f9f9f9;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .product-name {
+      font-size: 1.2rem;
+      margin: 0 0 5px 0;
+      color: var(--dark);
+    }
+    
+    .product-category {
+      font-size: 0.9rem;
+      color: var(--primary);
+      margin: 0 0 10px 0;
+    }
+    
+    .product-price {
+      font-weight: bold;
+      color: var(--success);
+      margin: 10px 0;
+      font-size: 1.3rem;
+    }
+    
+    .product-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .add-to-cart {
+      padding: 8px 15px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    
+    .add-to-cart:hover {
+      background: var(--secondary);
+    }
+    
+    .favorite-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .favorite-btn.active {
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+    
+    .sidebar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      width: 300px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .sidebar-title {
+      color: var(--primary);
+      margin-top: 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--secondary);
+    }
+    
+    .cart-item, .fav-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .cart-item-info, .fav-item-info {
+      flex: 1;
+    }
+    
+    .cart-item-name, .fav-item-name {
+      font-weight: 600;
+      margin: 0 0 5px 0;
+    }
+    
+    .cart-item-price, .fav-item-price {
+      color: var(--success);
+      font-size: 0.9rem;
+    }
+    
+    .remove-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    
+    .total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 2px solid var(--secondary);
+    }
+    
+    .empty-message {
+      color: var(--dark);
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        margin-top: 30px;
+        max-height: none;
+      }
+      
+      .app {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+  
+    function ProductCard({ product, onAddToCart, onToggleFavorite }) {
+      return (
+        <div className="product-card">
+          {product.isNew && <span className="product-badge">Nuevo</span>}
+          <img src={product.image} alt={product.name} />
+          <h3 className="product-name">{product.name}</h3>
+          <p className="product-category">{product.category}</p>
+          <div className="product-price">S/ {product.price.toFixed(2)}</div>
+          <div className="product-actions">
+            <button 
+              className="add-to-cart"
+              onClick={() => onAddToCart(product)}
+            >
+              Agregar
+            </button>
+            <button 
+              className={`favorite-btn ${product.isFavorite ? 'active' : ''}`}
+              onClick={() => onToggleFavorite(product.id)}
+            >
+              {product.isFavorite ? '★' : '☆'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+   
+    function CategoryFilter({ categories, activeCategory, onSelectCategory }) {
+      return (
+        <div className="categories">
+          <button 
+            className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
+            onClick={() => onSelectCategory('all')}
+          >
+            Todos
+          </button>
+          {categories.map(category => (
+            <button
+              key={category}
+              className={`category-btn ${activeCategory === category ? 'active' : ''}`}
+              onClick={() => onSelectCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+   
+    function Cart({ cartItems, onRemoveFromCart }) {
+      const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      return (
+        <div className="sidebar">
+          <h3 className="sidebar-title">🛒 Carrito ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})</h3>
+          {cartItems.length === 0 ? (
+            <p className="empty-message">Tu carrito está vacío</p>
+          ) : (
+            <>
+              {cartItems.map(item => (
+                <div key={item.id} className="cart-item">
+                  <div className="cart-item-info">
+                    <div className="cart-item-name">{item.name} (x{item.quantity})</div>
+                    <div className="cart-item-price">S/ {(item.price * item.quantity).toFixed(2)}</div>
+                  </div>
+                  <button 
+                    className="remove-btn"
+                    onClick={() => onRemoveFromCart(item.id)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ))}
+              <div className="total">
+                Total: S/ {total.toFixed(2)}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+   
+    function Favorites({ favorites, onRemoveFavorite, onAddToCart }) {
+      return (
+        <div className="sidebar" style={{ right: '340px' }}>
+          <h3 className="sidebar-title">❤️ Favoritos ({favorites.length})</h3>
+          {favorites.length === 0 ? (
+            <p className="empty-message">No tienes favoritos aún</p>
+          ) : (
+            <>
+              {favorites.map(item => (
+                <div key={item.id} className="fav-item">
+                  <div className="fav-item-info">
+                    <div className="fav-item-name">{item.name}</div>
+                    <div className="fav-item-price">S/ {item.price.toFixed(2)}</div>
+                  </div>
+                  <div>
+                    <button 
+                      className="add-to-cart"
+                      style={{ padding: '5px 10px', fontSize: '0.8rem' }}
+                      onClick={() => onAddToCart(item)}
+                    >
+                      +
+                    </button>
+                    <button 
+                      className="remove-btn"
+                      onClick={() => onRemoveFavorite(item.id)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      );
+    }
+
+
+    function App() {
+      const [products, setProducts] = React.useState([
+        {
+          id: 1,
+          name: 'iPhone 13 Pro',
+          category: 'Apple',
+          price: 4500,
+          image: 'https://www.apple.com/newsroom/images/product/iphone/standard/Apple_iPhone-13-Pro_iPhone-13-Pro-Max_09142021_inline.jpg.large.jpg',
+          isFavorite: false,
+          isNew: true
+        },
+        {
+          id: 2,
+          name: 'Samsung Galaxy S22 Ultra',
+          category: 'Samsung',
+          price: 4200,
+          image: "samdu.jpg",
+          isFavorite: false,
+          isNew: true
+        },
+        {
+          id: 3,
+          name: 'Xiaomi Redmi Note 11 Pro',
+          category: 'Xiaomi',
+          price: 1500,
+          image: 'ciomi.webp',
+          isFavorite: false,
+          isNew: false
+        },
+        {
+          id: 4,
+          name: 'iPhone SE (2022)',
+          category: 'Apple',
+          price: 2200,
+          image: 'https://www.apple.com/newsroom/images/product/iphone/standard/Apple_new-iphone-se-white_04152020_big.jpg.large.jpg',
+          isFavorite: false,
+          isNew: true
+        },
+        {
+          id: 5,
+          name: 'Samsung Galaxy A73',
+          category: 'Samsung',
+          price: 1800,
+          image: "susd.jpg",
+          isFavorite: false,
+          isNew: false
+        },
+        {
+          id: 6,
+          name: 'Xiaomi Poco X4 Pro',
+          category: 'Xiaomi',
+          price: 1600,
+          image: "noest.jpeg" ,
+          isFavorite: false,
+          isNew: false
+        }
+      ]);
+      
+      const [cartItems, setCartItems] = React.useState([]);
+      const [activeCategory, setActiveCategory] = React.useState('all');
+      const [activeTab, setActiveTab] = React.useState('products');
+      
+      const categories = [...new Set(products.map(product => product.category))];
+      const favorites = products.filter(product => product.isFavorite);
+      
+      const filteredProducts = activeCategory === 'all' 
+        ? products 
+        : products.filter(product => product.category === activeCategory);
+      
+      const handleAddToCart = (product) => {
+        setCartItems(prevItems => {
+          const existingItem = prevItems.find(item => item.id === product.id);
+          if (existingItem) {
+            return prevItems.map(item =>
+              item.id === product.id 
+                ? { ...item, quantity: item.quantity + 1 } 
+                : item
+            );
+          } else {
+            return [...prevItems, { ...product, quantity: 1 }];
+          }
+        });
+      };
+      
+      const handleRemoveFromCart = (productId) => {
+        setCartItems(prevItems => 
+          prevItems.filter(item => item.id !== productId)
+        );
+      };
+      
+      const handleToggleFavorite = (productId) => {
+        setProducts(prevProducts =>
+          prevProducts.map(product =>
+            product.id === productId
+              ? { ...product, isFavorite: !product.isFavorite }
+              : product
+          )
+        );
+      };
+      
+      const handleRemoveFavorite = (productId) => {
+        setProducts(prevProducts =>
+          prevProducts.map(product =>
+            product.id === productId
+              ? { ...product, isFavorite: false }
+              : product
+          )
+        );
+      };
+      
+      return (
+        <div className="app">
+          <div className="header">
+            <h1 className="app-title">Tienda de celulares - 🦙</h1>
+          </div>
+          
+          <div className="nav-tabs">
+            <button 
+              className={`tab-btn ${activeTab === 'products' ? 'active' : ''}`}
+              onClick={() => setActiveTab('products')}
+            >
+              Productos
+            </button>
+            <button 
+              className={`tab-btn ${activeTab === 'favorites' ? 'active' : ''}`}
+              onClick={() => setActiveTab('favorites')}
+            >
+              Favoritos
+            </button>
+          </div>
+          
+          {activeTab === 'products' && (
+            <>
+              <CategoryFilter 
+                categories={categories} 
+                activeCategory={activeCategory} 
+                onSelectCategory={setActiveCategory} 
+              />
+              
+              <div className="products">
+                {filteredProducts.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+          
+          {activeTab === 'favorites' && (
+            <div className="products">
+              {favorites.length > 0 ? (
+                favorites.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                ))
+              ) : (
+                <p className="empty-message">No tienes productos favoritos aún</p>
+              )}
+            </div>
+          )}
+          
+          <Cart 
+            cartItems={cartItems} 
+            onRemoveFromCart={handleRemoveFromCart} 
+          />
+          
+          <Favorites
+            favorites={favorites}
+            onRemoveFavorite={handleRemoveFavorite}
+            onAddToCart={handleAddToCart}
+          />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+ </script>
+</body>
+</html>
+
+
+
